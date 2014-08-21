@@ -19,5 +19,8 @@ ENV JENKINS_HOME /var/jenkins_home
 VOLUME /var/jenkins_home
 # for main web interface:
 EXPOSE 8080
+ADD ./start /start
+RUN chmod +x /start
+CMD /start
 
-CMD chown jenkins /var/jenkins_home && su - jenkins -c "/usr/bin/java -jar /usr/share/jenkins/jenkins.war"
+

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+chown jenkins /var/jenkins_home
+#if [ ! -e "/var/jenkins_home/config.xml" ] ; then
+#  cat >> /var/jenkins_home/config.xml << FEOF
+
+
+#FEOF
+#fi
+
+su - jenkins -c "JENKINS_HOME=$JENKINS_HOME /usr/bin/java -jar /usr/share/jenkins/jenkins.war"
