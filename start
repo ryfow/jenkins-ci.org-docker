@@ -57,7 +57,7 @@ if [ ! -e "/var/jenkins_home/config.xml" ] ; then
     </hudson.model.AllView>
   </views>
   <primaryView>All</primaryView>
-  <slaveAgentPort>0</slaveAgentPort>
+  <slaveAgentPort>50000</slaveAgentPort>
   <label></label>
   <nodeProperties/>
   <globalNodeProperties/>
