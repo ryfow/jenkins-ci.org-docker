@@ -2,7 +2,7 @@
 
 chown jenkins /var/jenkins_home
 if [ ! -e "/var/jenkins_home/config.xml" ] ; then
-  cat >> /var/jenkins_home/config.xml << FEOF
+  cat > /var/jenkins_home/config.xml << FEOF
 <?xml version='1.0' encoding='UTF-8'?>
 <hudson>
   <disabledAdministrativeMonitors/>
@@ -10,8 +10,6 @@ if [ ! -e "/var/jenkins_home/config.xml" ] ; then
   <numExecutors>2</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
-  <authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>
-  <securityRealm class="hudson.security.SecurityRealm$None"/>
   <disableRememberMe>false</disableRememberMe>
   <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
   <workspaceDir>${ITEM_ROOTDIR}/workspace</workspaceDir>
@@ -64,6 +62,7 @@ if [ ! -e "/var/jenkins_home/config.xml" ] ; then
 </hudson>
 
 FEOF
+  chown jenkins /var/jenkins_home/config.xml
 fi
 
 su - jenkins -c "JENKINS_HOME=$JENKINS_HOME /usr/bin/java -jar /usr/share/jenkins/jenkins.war"
