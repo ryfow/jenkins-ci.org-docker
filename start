@@ -58,31 +58,102 @@ if [ ! -e "/var/jenkins_home/config.xml" ] ; then
   <globalNodeProperties/>
 </hudson>
 FEOF
-  chown jenkins /var/jenkins_home/config.xml
-  mkdir -p /var/jenkins_home/plugins
-  cd /var/jenkins_home/plugins
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/git/2.2.5/git.hpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/matrix-project/1.2/matrix-project.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/external-monitor/1.2/external-monitor-job.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/ant/1.2/ant.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/git-client/1.10.1/git-client.hpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/cvs/2.11/cvs.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/matrix-auth/1.1/matrix-auth.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/mavin-plugin/2.3/maven-plugin.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/scm-api/0.2/scm-api.hpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/windows-slaves/1.0/windows-slaves.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/translation/1.10/translation.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/subversion/1.54/subversion.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/pam-auth/1.1/pam-auth.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/credentials/1.9.4/credentials.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/antisamy-markup-formatter/1.1/antisamy-markup-formatter.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/ssh-slaves/1.54/ssh-slaves.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/ldap/1.6/ldap.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/javadoc/1.1/javadoc.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins//ssh-credentials.jpi
-  curl -O -L  http://updates.jenkins-ci.org/download/plugins/mailer/1.8/mailer.jpi
-  chown -R jenkins .
-  cd /var/jenkins_home
+
+cat > /var/jenkins_home/hudson.tasks.Maven.xml << FEOF
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.tasks.Maven_-DescriptorImpl>
+  <installations>
+    <hudson.tasks.Maven_-MavenInstallation>
+      <name>3.2.1</name>
+      <properties>
+        <hudson.tools.InstallSourceProperty>
+          <installers>
+            <hudson.tasks.Maven_-MavenInstaller>
+              <id>3.2.1</id>
+            </hudson.tasks.Maven_-MavenInstaller>
+          </installers>
+        </hudson.tools.InstallSourceProperty>
+      </properties>
+    </hudson.tasks.Maven_-MavenInstallation>
+  </installations>
+</hudson.tasks.Maven_-DescriptorImpl>
+FEOF
+
+mkdir -p /var/jenkins_home/jobs/BuildJenkins
+cat > /var/jenkins_home/jobs/BuildJenkins/config.xml <<EOF
+<?xml version='1.0' encoding='UTF-8'?>
+<maven2-moduleset plugin="maven-plugin@2.3">
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.2.5">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/jenkinsci/jenkins.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <rootModule>
+    <groupId>org.jenkins-ci.main</groupId>
+    <artifactId>pom</artifactId>
+  </rootModule>
+  <goals>-DskipTests=true package</goals>
+  <defaultGoals>install</defaultGoals>
+  <aggregatorStyleBuild>true</aggregatorStyleBuild>
+  <incrementalBuild>false</incrementalBuild>
+  <ignoreUpstremChanges>false</ignoreUpstremChanges>
+  <archivingDisabled>false</archivingDisabled>
+  <siteArchivingDisabled>false</siteArchivingDisabled>
+  <resolveDependencies>false</resolveDependencies>
+  <processPlugins>false</processPlugins>
+  <mavenValidationLevel>-1</mavenValidationLevel>
+  <runHeadless>false</runHeadless>
+  <disableTriggerDownstreamProjects>false</disableTriggerDownstreamProjects>
+  <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+  <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+  <reporters/>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>war/target/jenkins.war</artifacts>
+      <latestOnly>false</latestOnly>
+      <allowEmptyArchive>false</allowEmptyArchive>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
+  <buildWrappers/>
+  <prebuilders/>
+  <postbuilders/>
+  <runPostStepsIfResult>
+    <name>FAILURE</name>
+    <ordinal>2</ordinal>
+    <color>RED</color>
+    <completeBuild>true</completeBuild>
+  </runPostStepsIfResult>
+</maven2-moduleset>
+EOF
+  mkdir /var/jenkins_home/jobs/BuildJenkins/modules
+  echo 1 > /var/jenkins_home/jobs/BuildJenkins/nextBuildNumber
+
+mkdir -p /var/jenkins_home/plugins
+cd /var/jenkins_home/plugins
+cp /var/plugins/* .
+chown -R jenkins /var/jenkins_home
+cd /var/jenkins_home
 fi
 
 su - jenkins -c "JENKINS_HOME=$JENKINS_HOME /usr/bin/java -jar /usr/share/jenkins/jenkins.war"

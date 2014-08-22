@@ -19,6 +19,11 @@ EXPOSE 50000
 # VOLUME /var/jenkins_home - bind this in via -v if you want to make this persistent.
 ENV JENKINS_HOME /var/jenkins_home
 VOLUME /var/jenkins_home
+ADD ./plugins.txt /plugins.txt
+RUN mkdir /var/plugins
+WORKDIR /var/plugins
+RUN for i in $(cat /plugins.txt) ; do curl -O -L $i ; done
+WORKDIR /var/jenkins_home
 # for main web interface:
 EXPOSE 8080
 ADD ./start /start
