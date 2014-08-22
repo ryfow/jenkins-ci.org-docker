@@ -1,4 +1,4 @@
-# Official Jenkins Docker image
+# Ryfow's Unofficial Jenkins Docker image
 
 The Jenkins Continuous Integration and Delivery server. 
 
@@ -8,6 +8,19 @@ http://jenkins-ci.org/
 
 <img src="http://jenkins-ci.org/sites/default/files/jenkins_logo.png"/>
 
+This Docker image diverges from the official one in a couple of key ways.
+
+1. There's a list of plugins stored in plugins.txt that are installed
+   by default. This allows the docker container to access Git
+   repositories out of the box.
+1. Some defaults are loaded into /var/jenkins_home. A maven installer
+   is pre-configured, the slaveAgentPort is configured via config.xml,
+   and a "BuildJenkins" job is preloaded as an example job to run.
+1. Jenkins.instance.setAgentPort() was removed from init.groovy. That
+   operation did not appear to work.
+1. The /start script is run by root, which checks to see if the config
+   defaults should be loaded and chowned to jenkins, and then runs
+   `su - jenkins java -jar jenkins.jar`
 
 # Usage
 
