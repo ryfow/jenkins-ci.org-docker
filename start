@@ -11,9 +11,8 @@ if [ ! -e "/var/jenkins_home/config.xml" ] ; then
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
   <disableRememberMe>false</disableRememberMe>
-  <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
-  <workspaceDir>${ITEM_ROOTDIR}/workspace</workspaceDir>
-  <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
+  <workspaceDir>/var/jenkins_home/workspace</workspaceDir>
+  <buildsDir>/var/jenkins_home/builds</buildsDir>
   <jdks/>
   <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
   <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
@@ -25,7 +24,6 @@ if [ ! -e "/var/jenkins_home/config.xml" ] ; then
       <remoteFS>/home/jenkins</remoteFS>
       <numExecutors>1</numExecutors>
       <mode>NORMAL</mode>
-      <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
       <launcher class="hudson.slaves.JNLPLauncher"/>
       <label></label>
       <nodeProperties/>
@@ -37,7 +35,6 @@ if [ ! -e "/var/jenkins_home/config.xml" ] ; then
       <remoteFS>/home/jenkins</remoteFS>
       <numExecutors>1</numExecutors>
       <mode>NORMAL</mode>
-      <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
       <launcher class="hudson.slaves.JNLPLauncher"/>
       <label></label>
       <nodeProperties/>
@@ -51,7 +48,7 @@ if [ ! -e "/var/jenkins_home/config.xml" ] ; then
       <name>All</name>
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
-      <properties class="hudson.model.View$PropertyList"/>
+      <properties/>
     </hudson.model.AllView>
   </views>
   <primaryView>All</primaryView>
@@ -60,9 +57,32 @@ if [ ! -e "/var/jenkins_home/config.xml" ] ; then
   <nodeProperties/>
   <globalNodeProperties/>
 </hudson>
-
 FEOF
   chown jenkins /var/jenkins_home/config.xml
+  mkdir -p /var/jenkins_home/plugins
+  cd /var/jenkins_home/plugins
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/git/2.2.5/git.hpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/matrix-project/1.2/matrix-project.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/external-monitor/1.2/external-monitor-job.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/ant/1.2/ant.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/git-client/1.10.1/git-client.hpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/cvs/2.11/cvs.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/matrix-auth/1.1/matrix-auth.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/mavin-plugin/2.3/maven-plugin.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/scm-api/0.2/scm-api.hpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/windows-slaves/1.0/windows-slaves.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/translation/1.10/translation.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/subversion/1.54/subversion.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/pam-auth/1.1/pam-auth.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/credentials/1.9.4/credentials.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/antisamy-markup-formatter/1.1/antisamy-markup-formatter.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/ssh-slaves/1.54/ssh-slaves.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/ldap/1.6/ldap.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/javadoc/1.1/javadoc.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins//ssh-credentials.jpi
+  curl -O -L  http://updates.jenkins-ci.org/download/plugins/mailer/1.8/mailer.jpi
+  chown -R jenkins .
+  cd /var/jenkins_home
 fi
 
 su - jenkins -c "JENKINS_HOME=$JENKINS_HOME /usr/bin/java -jar /usr/share/jenkins/jenkins.war"
