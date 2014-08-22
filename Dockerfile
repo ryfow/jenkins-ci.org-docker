@@ -29,5 +29,5 @@ EXPOSE 8080
 ADD ./start /start
 RUN chmod +x /start
 CMD /start
-
+ADD ./home_templates /var/jenkins_home_templates
 
